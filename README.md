@@ -23,7 +23,7 @@ This is a prototype for the project **"Disaster Management using Generative AI."
    - Navigate to the folder `ngrok-v3-stable-windows-amd64`.
    - Run the `ngrok.exe` file inside the folder.
 
-5. **Start the Ngrok local server:**
+5. **Start the ngrok local server:**
    ```bash
    ngrok http 5000
    ```
@@ -52,4 +52,6 @@ This is a prototype for the project **"Disaster Management using Generative AI."
 
 10. **View Transcription and Disaster Type Matching:**
     - The transcription will be printed in the terminal.
-    - The Z-score matching different disaster types will also be displayed in the terminal.
+    - Google's gemini will analyze the information reflected by the transcribed text and return JSON format
+    - The JSON format contains any name mentioned by the caller, address, disaster type
+    - It will also give a sentiment analysis based on the transcribed text
