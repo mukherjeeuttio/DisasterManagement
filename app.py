@@ -3,11 +3,19 @@ import requests
 from flask import Flask, request, jsonify
 from twilio.twiml.voice_response import VoiceResponse
 import whisper
-import time
+from dotenv import load_dotenv
+import google.generativeai as genai
 
-from NER_Extract import ner_inference
-from Z_classify import Z_classify_inference
-from config import API_TOKEN_HF
+# Load environment variables for API keys
+load_dotenv()
+
+# Check if API key is loaded
+API_KEY_GEM = os.getenv("API_KEY_GEM")
+if not API_KEY_GEM:
+    raise ValueError("API_KEY_GEM not set in environment variables.")
+
+# Configure the Google Generative AI API with the API key
+genai.configure(api_key=API_KEY_GEM)
 
 app = Flask(__name__)
 
@@ -42,7 +50,7 @@ def handle_recording():
     recordings[call_sid] = recording_url  # Save the recording URL
     print(f"Recording available at: {recording_url}")
 
-    # Download the recording with retry logic
+    # Download the recording
     file_name = download_recording(recording_url, call_sid)
 
     if not file_name:
@@ -57,45 +65,40 @@ def handle_recording():
     transcriptions[call_sid] = transcription_text  # Save the transcription
     print(f"Transcription: {transcription_text}")
 
-    # Process the transcription with ML models
-    process_audio(transcription_text, API_TOKEN_HF)
+    # Process the transcription with GenAI
+    genai_results = extract_info_and_analyze(transcription_text)
+
+    if genai_results:
+        print("Generative AI Analysis Results:", genai_results)
+    else:
+        print("Generative AI analysis failed.")
 
     # Clean up the audio file
     os.remove(file_name)
 
-    return "Call recorded and transcribed successfully."
+    return "Call recorded, transcribed, and analyzed successfully."
 
 def download_recording(recording_url, call_sid):
     # Your Twilio Account SID and Auth Token
     account_sid = 'AC777f91e00fbc880a45990c94a9eecb18'
     auth_token = 'bb7c213c01581e496dfd6f1ab0375941'
 
-    # Determine the format (either .mp3 or .wav) based on what Twilio provides
-    file_formats = [".wav", ".mp3"]
+    # Correct the URL format
+    full_url = recording_url
 
-    for file_format in file_formats:
-        try:
-            full_url = f"{recording_url}{file_format}"
+    # Twilio requires authentication to download the recording
+    response = requests.get(full_url, auth=(account_sid, auth_token))
 
-            print(f"Attempting to download recording: {full_url}")
-            
-            # Twilio requires authentication to download the recording
-            response = requests.get(full_url, auth=(account_sid, auth_token))
+    if response.status_code != 200:
+        print(f"Failed to download recording: {response.status_code}")
+        return None
 
-            if response.status_code == 200:
-                # Save the audio file locally
-                file_name = f"{call_sid}{file_format}"
-                with open(file_name, 'wb') as f:
-                    f.write(response.content)
-                print(f"Recording downloaded successfully: {file_name}")
-                return file_name
-            else:
-                print(f"Failed to download recording: {response.status_code} - {response.text}")
-                
-        except Exception as e:
-            print(f"Error downloading recording: {e}")
-    
-    return None
+    # Save the audio file locally
+    file_name = f"{call_sid}.wav"
+    with open(file_name, 'wb') as f:
+        f.write(response.content)
+
+    return file_name
 
 def transcribe_audio(file_name):
     try:
@@ -106,25 +109,28 @@ def transcribe_audio(file_name):
         print(f"Error during transcription: {e}")
         return None
 
-# Function to process audio transcription with ML models
-def process_audio(transcribed_text, api_token):
-    if not transcribed_text:
-        print("No transcribed text found. Exiting...")
-        return
-
-    # NER Inference
-    ner_results = ner_inference(transcribed_text, api_token)
-    z_class_results = Z_classify_inference(transcribed_text, api_token)
-
-    if ner_results:
-        print("Named Entities Detected:", ner_results)
-    else:
-        print("NER inference failed. Possibly due to bad input.")
-
-    if z_class_results:
-        print("Z-class Detected:", z_class_results)
-    else:
-        print("Z-class inference failed.")
+# Function to process audio transcription with Google Generative AI
+def extract_info_and_analyze(text):
+    # Build a prompt that asks the API to identify names, addresses, and disaster sentiment
+    prompt = f"""
+    Given the following text:
+    
+    "{text}"
+    
+    1. Identify and extract all names (e.g., persons).
+    2. Identify and extract all addresses or places.
+    3. Analyze the sentiment and tell if the text mentions any disasters like fire, earthquake, crime, floods, etc.
+    4. Return the extracted names, addresses, and the disaster/issue in json format.
+    """
+    
+    try:
+        # Send the request to the model
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print(f"Error with Generative AI API: {e}")
+        return None
 
 if __name__ == "__main__":
     app.run(debug=True)
