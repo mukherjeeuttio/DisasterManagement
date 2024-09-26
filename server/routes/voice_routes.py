@@ -1,4 +1,5 @@
 # routes/voice_routes.py
+from flask import session
 import os
 from flask import Blueprint, request, jsonify
 from services.twilio_service import create_voice_response, gather_language_selection_message
@@ -18,35 +19,37 @@ def voice():
 @voice_bp.route("/language-selection", methods=['POST'])
 def language_selection():
     selected_language = request.form.get("Digits")
-    
+
     if selected_language == '1':
         language = 'en'
-        message = "You selected English. Please describe your situation."
     elif selected_language == '2':
         language = 'bn'
-        message = "Aapni Bangla bhasha choyon korechen. Doya Kore Aapnar bortoman Poristhitir biboron din."
     elif selected_language == '3':
         language = 'hi'
-        message = "Aapne Hindi chuna hai. Kripya apne paristhiti ka varnan kare."
     else:
         return jsonify({"error": "Invalid selection"}), 400
 
-    # Store selected language in session or any temporary storage
-    request.environ['selected_language'] = language
+    # Store selected language in session
+    session['selected_language'] = language
 
-    # Create the VoiceResponse object for Twilio
+    # Debug print to verify which language is chosen
+    print(f"Language selected by user: {language}")
+
+    # Create VoiceResponse object
+    message = "You selected " + ("English" if language == 'en' else "Bangla" if language == 'bn' else "Hindi")
     resp = create_voice_response(message)
-    
-    # Add recording functionality here
     resp.record(max_length=120, action="/handle-recording", method="POST")
-    
-    return str(resp)  # Convert to string
+
+    return str(resp)
 
 @voice_bp.route("/handle-recording", methods=['POST'])
 def handle_recording():
     recording_url = request.form.get("RecordingUrl")
     call_sid = request.form.get("CallSid")
-    selected_language = request.environ.get('selected_language')
+    selected_language = session.get('selected_language')  # Get selected language from session
+
+    # Debugging print to ensure the selected language is correct
+    print(f"Selected language in handle_recording: {selected_language}")
 
     if not recording_url or not call_sid:
         return jsonify({"error": "Missing data from Twilio"}), 400
@@ -58,13 +61,14 @@ def handle_recording():
         return jsonify({"error": "Failed to download recording"}), 500
 
     transcription_text = transcribe_audio(file_name, selected_language)
-
+    print('Transcribed Text: '+transcription_text)
     if not transcription_text:
         return jsonify({"error": "Transcription failed"}), 500
 
     # Translate to English if needed
     if selected_language in ['hi', 'bn']:
         transcription_text = translate_to_english(transcription_text, selected_language)
+
     print(f"Transcribed Text: {transcription_text}")
     genai_results = extract_info_and_analyze(transcription_text)
 
@@ -73,16 +77,6 @@ def handle_recording():
     else:
         print("Generative AI analysis failed.")
 
-    try:
-        store_transcription_data(transcribed_text=transcription_text, ai_response=genai_results)
-        print("Data stored in MongoDB succeddfully")
-    except Exception as e:
-        print(f"Error storing data in MongoDB: {e}")
-        return jsonify({"error": "Failed to store transcription data"}), 500
     # Clean up
     os.remove(file_name)
-    return jsonify({
-        "message": "Call recorded, transcribed, and analyzed successfully.",
-        "trancribed_text": transcription_text,
-        "ai_response": genai_results
-    })
+    return jsonify({"message": "Call recorded, transcribed, and analyzed successfully."})

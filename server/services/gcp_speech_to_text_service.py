@@ -20,6 +20,8 @@ def transcribe_audio(file_path, selected_language):
     
     language_code = language_code_map.get(selected_language, 'en-US')
 
+    print(f"Selected language code: {language_code}")
+
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
         sample_rate_hertz=8000,  # Update based on your audio file
