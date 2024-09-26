@@ -64,7 +64,7 @@ def handle_recording():
     # Translate to English if needed
     if selected_language in ['hi', 'bn']:
         transcription_text = translate_to_english(transcription_text, selected_language)
-
+    print(f"Transcribed Text: {transcription_text}")
     genai_results = extract_info_and_analyze(transcription_text)
 
     if genai_results:
