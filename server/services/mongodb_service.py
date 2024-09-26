@@ -2,7 +2,7 @@
 from pymongo import MongoClient
 
 # MongoDB Atlas connection string (replace <username>, <password>, and <cluster-url> with your credentials)
-MONGODB_URI = "mongodb+srv://Bhalu:DMD_Hack2004@disastermanagementdatab.6mjxk.mongodb.net/?retryWrites=true&w=majority&appName=DisasterManagementDatabase"
+MONGODB_URI = "mongodb+srv://Bhalu:DMD_Hack2004@disastermanagementdatab.6mjxk.mongodb.net/?retryWrites=true&w=majority&appName=DisasterManagementDatabase&ipv6=false"
 client = MongoClient(MONGODB_URI)
 
 # Select the database and collection
