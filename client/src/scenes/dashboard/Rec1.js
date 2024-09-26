@@ -1,9 +1,9 @@
 import DashBox from '../../components/DashBox';
-// import { Box } from '@mui/material'; 
 import DataTable from '../../components/DataTable';
 import LiveTranscription from '../../components/Transcriber';
 
-const Rec1 = () => {
+const Rec1 = ({ onTaskSelect }) => {
+
   return (
     <DashBox gridArea="a">        
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
@@ -11,7 +11,7 @@ const Rec1 = () => {
           <LiveTranscription />
         </div>
         <div style={{ flex: "0 0 75%", marginTop: "0rem" }}>
-          <DataTable />
+          <DataTable onRowClick={onTaskSelect} />  {/* Pass the handler */}
         </div>
       </div>
     </DashBox>

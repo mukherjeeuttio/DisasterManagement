@@ -6,6 +6,7 @@ from services.recording_service import download_recording
 from services.gcp_speech_to_text_service import transcribe_audio
 from services.translation_service import translate_to_english
 from services.ai_service import extract_info_and_analyze
+from services.mongodb_service import store_transcription_data
 
 voice_bp = Blueprint('voice', __name__)
 
@@ -72,6 +73,16 @@ def handle_recording():
     else:
         print("Generative AI analysis failed.")
 
+    try:
+        store_transcription_data(transcribed_text=transcription_text, ai_response=genai_results)
+        print("Data stored in MongoDB succeddfully")
+    except Exception as e:
+        print(f"Error storing data in MongoDB: {e}")
+        return jsonify({"error": "Failed to store transcription data"}), 500
     # Clean up
     os.remove(file_name)
-    return jsonify({"message": "Call recorded, transcribed, and analyzed successfully."})
+    return jsonify({
+        "message": "Call recorded, transcribed, and analyzed successfully.",
+        "trancribed_text": transcription_text,
+        "ai_response": genai_results
+    })

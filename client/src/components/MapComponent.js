@@ -6,7 +6,6 @@ const MapComponent = ({ selectedAddress }) => {
 
   useEffect(() => {
     if (selectedAddress) {
-      // Use Geocoding API to convert address to coordinates
       const geocodeAddress = async (address) => {
         const response = await fetch(
           `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=YOUR_API_KEY`
@@ -25,7 +24,7 @@ const MapComponent = ({ selectedAddress }) => {
   return (
     <LoadScript googleMapsApiKey="YOUR_API_KEY">
       <GoogleMap
-        mapContainerStyle={{ width: '100%', height: '400px' }}
+        mapContainerStyle={{ width: '100%', height: '100%',borderRadius:"1rem"}}
         center={location}
         zoom={12}
       >

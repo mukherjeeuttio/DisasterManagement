@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 const LiveTranscription = () => {
@@ -10,7 +10,7 @@ const LiveTranscription = () => {
   const testTranscriptions = [
     "Hello, this is a test transcription.",
     "We are testing the live transcription feature.",
-    "The quick brown fox jumps over the lazy dog.",
+    "The quick brown fox jumps over the lazy dog.", 
     "React is a great library for building UIs.",
     "This will simulate live speech-to-text transcription."
   ];
@@ -28,10 +28,10 @@ const LiveTranscription = () => {
       maxHeight: '300px',
       overflowY: 'auto',
     }}>
-      <Typography variant="h3" sx={{ marginBottom: '1rem', color: theme.palette.text.primary }}>
+      <Typography variant="h3" sx={{ marginBottom: '1rem', color: '#12efc8' }}>
         Live Transcription:
       </Typography>
-      <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+      <Typography variant="body1" sx={{ color: 'white' }}>
         {displayedText}
       </Typography>
     </Box>
