@@ -1,70 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography} from '@mui/material';
+import React from 'react';
+import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-const LiveTranscription = () => {
+const LiveTranscription = ({ selectedTranscription }) => {
   const theme = useTheme();
-  const [displayedText, setDisplayedText] = useState('');
-
-  // Sample predefined transcriptions for testing
-  const testTranscriptions = [
-    "Hello, this is a test transcription.",
-    "We are testing the live transcription feature.",
-    "The quick brown fox jumps over the lazy dog.", 
-    "React is a great library for building UIs.",
-    "This will simulate live speech-to-text transcription."
-  ];
-
-  useEffect(() => {
-    // Combine the test transcriptions into a single string
-    setDisplayedText(testTranscriptions.join(' '));
-  }, []);
 
   return (
     <Box sx={{
-      padding: '1rem',
+      paddingTop: '0',
+      paddingLeft: "1rem",
+      paddingRight: "1rem",
+      paddingBottom: "1rem",
       backgroundColor: theme.palette.background.light,
       borderRadius: '8px',
-      maxHeight: '300px',
+      marginBottom: '0.5rem',
+      maxHeight: '160px',
       overflowY: 'auto',
+      wordWrap: 'break-word',
+      whiteSpace: 'pre-wrap',
+      position: 'relative'  // Ensure z-index is respected
     }}>
-      <Typography variant="h3" sx={{ marginBottom: '1rem', color: '#12efc8' }}>
-        Live Transcription:
+      <Typography 
+        variant="h3" 
+        sx={{ 
+          marginBottom: '1rem',
+          color: '#12efc8', 
+          position: 'sticky',  // Keep the heading fixed while scrolling
+          top: 0,              // Stick to the top of the container
+          backgroundColor: theme.palette.background.light, // Maintain background color behind sticky 
+          zIndex: 2,           // Ensure it stays above scrolling content
+          padding: '0.5rem',   // Add padding around the heading
+        }}
+      >
+        Transcription:
       </Typography>
-      <Typography variant="body1" sx={{ color: 'white' }}>
-        {displayedText}
-      </Typography>
+      <Box sx={{ zIndex: 1, position: 'relative' }}>
+        <Typography variant="body1" sx={{ color: 'white' }}>
+          {selectedTranscription || "Select a task to view transcription."}
+        </Typography>
+      </Box>
     </Box>
   );
 };
 
 export default LiveTranscription;
-
-
-
-
-// import React, { useState, useEffect } from 'react';
-
-// const LiveTranscription = ({ transcriptions }) => {
-//   const [displayedText, setDisplayedText] = useState('');
-
-//   useEffect(() => {
-//     setDisplayedText(transcriptions.join(' '));
-//   }, [transcriptions]);
-
-//   return (
-//     <div style={{
-//       padding: '1rem',
-//       border: '1px solid #ccc',
-//       borderRadius: '8px',
-//       backgroundColor: '#f9f9f9',
-//       maxHeight: '300px',
-//       overflowY: 'auto'
-//     }}>
-//       <h3>Live Transcription:</h3>
-//       <p>{displayedText}</p>
-//     </div>
-//   );
-// };
-
-// export default LiveTranscription;
