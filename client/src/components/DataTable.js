@@ -16,19 +16,15 @@ import {
 import { useTheme } from "@mui/material/styles";
 
 const initialData = [
+  { name: "John Doe", address: "VIT,VELLORE", disaster: "Flood", time: "2024-09-22 10:30 AM", priority: "High", status: "Ongoing", phone: "123-456-7890", transcription: "Flood emergency at VIT,VELLORE. Immediate attention required.Flood emergency at VIT,VELLORE. Immediate attention required." },
+  { name: "Jane Smith", address: "VIT,VELLORE", disaster: "Earthquake", time: "2024-09-21 03:45 PM", priority: "Critical", status: "Resolved", phone: "987-654-3210", transcription: "Earthquake has been resolved but aftershocks continue." },
+  { name: "Alice Johnson", address: "VIT,VELLORE", disaster: "Wildfire", time: "2024-09-20 01:15 PM", priority: "Medium", status: "Ongoing", phone: "456-789-1234" },
+  { name: "Bob Brown", address: "Professor Enclave, Sector-56,Gururgram", disaster: "Tornado", time: "2024-09-19 11:00 AM", priority: "High", status: "Critical", phone: "321-654-9870" },
   { name: "John Doe", address: "123 Main St, City, Country", disaster: "Flood", time: "2024-09-22 10:30 AM", priority: "High", status: "Ongoing", phone: "123-456-7890" },
   { name: "Jane Smith", address: "456 Oak St, City, Country", disaster: "Earthquake", time: "2024-09-21 03:45 PM", priority: "Critical", status: "Resolved", phone: "987-654-3210" },
   { name: "Alice Johnson", address: "789 Pine St, City, Country", disaster: "Wildfire", time: "2024-09-20 01:15 PM", priority: "Medium", status: "Ongoing", phone: "456-789-1234" },
   { name: "Bob Brown", address: "321 Maple St, City, Country", disaster: "Tornado", time: "2024-09-19 11:00 AM", priority: "High", status: "Critical", phone: "321-654-9870" },
-  { name: "John Doe", address: "123 Main St, City, Country", disaster: "Flood", time: "2024-09-22 10:30 AM", priority: "High", status: "Ongoing", phone: "123-456-7890" },
-  { name: "Jane Smith", address: "456 Oak St, City, Country", disaster: "Earthquake", time: "2024-09-21 03:45 PM", priority: "Critical", status: "Resolved", phone: "987-654-3210" },
-  { name: "Alice Johnson", address: "789 Pine St, City, Country", disaster: "Wildfire", time: "2024-09-20 01:15 PM", priority: "Medium", status: "Ongoing", phone: "456-789-1234" },
-  { name: "Bob Brown", address: "321 Maple St, City, Country", disaster: "Tornado", time: "2024-09-19 11:00 AM", priority: "High", status: "Critical", phone: "321-654-9870" },
-  { name: "John Doe", address: "123 Main St, City, Country", disaster: "Flood", time: "2024-09-22 10:30 AM", priority: "High", status: "Ongoing", phone: "123-456-7890" },
-  { name: "Jane Smith", address: "456 Oak St, City, Country", disaster: "Earthquake", time: "2024-09-21 03:45 PM", priority: "Critical", status: "Resolved", phone: "987-654-3210" },
-  { name: "Alice Johnson", address: "789 Pine St, City, Country", disaster: "Wildfire", time: "2024-09-20 01:15 PM", priority: "Medium", status: "Ongoing", phone: "456-789-1234" },
-  { name: "Bob Brown", address: "321 Maple St, City, Country", disaster: "Tornado", time: "2024-09-19 11:00 AM", priority: "High", status: "Critical", phone: "321-654-9870" },
-  // ... more data
+  // Add more data as necessary
 ];
 
 const getStatusStyles = (status) => {
@@ -90,17 +86,24 @@ const DataTable = ({ onRowClick = () => {} }) => {
   const displayedData = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Box sx={{ padding: "0.25rem", backgroundColor: theme.palette.background.light, borderRadius: "1rem" }}>
-      <TableContainer component={Paper} elevation={0} sx={{ maxHeight: "450px", backgroundColor: theme.palette.background.light, width: '100%', overflow: 'auto' }}>
+    <Box sx={{ 
+      padding: "0.25rem", 
+      backgroundColor: theme.palette.background.light, 
+      borderRadius: "1rem",
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+    }}>
+      <TableContainer component={Paper} elevation={0} sx={{ flex: 1, backgroundColor: theme.palette.background.light, width: '100%', overflow: 'auto',maxHeight: "470px" }}>
         <Table sx={{ minWidth: '100%', color: '#F0F7FD' }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: theme.palette.background.light, position: 'sticky', top: 0, zIndex: 1 }}>
-              <TableCell sx={{ color: '#12efc8', position: 'sticky', top: 0 }}>Name</TableCell>
-              <TableCell sx={{ color: '#12efc8', position: 'sticky', top: 0 }}>Address</TableCell>
-              <TableCell sx={{ color: '#12efc8', position: 'sticky', top: 0 }}>Disaster</TableCell>
-              <TableCell sx={{ color: '#12efc8', position: 'sticky', top: 0 }}>Time</TableCell>
-              <TableCell sx={{ color: '#12efc8', position: 'sticky', top: 0 }}>Priority</TableCell>
-              <TableCell sx={{ color: '#12efc8', position: 'sticky', top: 0 }}>Status</TableCell>
+              <TableCell sx={{ color: '#12efc8' }}>Name</TableCell>
+              <TableCell sx={{ color: '#12efc8' }}>Address</TableCell>
+              <TableCell sx={{ color: '#12efc8' }}>Disaster</TableCell>
+              <TableCell sx={{ color: '#12efc8' }}>Time</TableCell>
+              <TableCell sx={{ color: '#12efc8' }}>Priority</TableCell>
+              <TableCell sx={{ color: '#12efc8' }}>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -174,7 +177,7 @@ const DataTable = ({ onRowClick = () => {} }) => {
                     )}
                   >
                     {statusOptions.map((status) => (
-                      <MenuItem key={status} value={status}>
+                      <MenuItem key={status} value={status} sx={{ color: theme.palette.grey[700] }}>
                         {status}
                       </MenuItem>
                     ))}
@@ -195,18 +198,7 @@ const DataTable = ({ onRowClick = () => {} }) => {
         onRowsPerPageChange={handleChangeRowsPerPage}
         sx={{
           backgroundColor: theme.palette.background.light,
-          color: '#F0F7FD',
-          '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-            color: '#F0F7FD',
-          },
-          '& .MuiTablePagination-actions': {
-            '& svg': {
-              color: '#F0F7FD',
-            },
-          },
-          '& .MuiSelect-icon': {
-            color: '#F0F7FD',
-          },
+          color: "#12efc8",
         }}
       />
     </Box>
