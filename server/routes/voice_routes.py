@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, request, jsonify
 from services.twilio_service import create_voice_response, gather_language_selection_message
 from services.recording_service import download_recording
-from services.whisper_service import transcribe_audio
+from services.gcp_speech_to_text_service import transcribe_audio
 from services.translation_service import translate_to_english
 from services.ai_service import extract_info_and_analyze
 
