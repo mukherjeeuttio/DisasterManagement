@@ -75,7 +75,7 @@ def handle_recording():
 
     try:
         store_transcription_data(transcribed_text=transcription_text, ai_response=genai_results)
-        print("Data stored in MongoDB succeddfully")
+        print("Data stored in MongoDB successfully")
     except Exception as e:
         print(f"Error storing data in MongoDB: {e}")
         return jsonify({"error": "Failed to store transcription data"}), 500
