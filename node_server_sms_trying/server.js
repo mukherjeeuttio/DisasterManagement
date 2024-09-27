@@ -1,5 +1,7 @@
 // Import required modules
 const express = require("express");
+const connectDB = require("./config/db.js");
+const User = require("./model/userModel.js")
 const dotenv = require("dotenv");
 const axios = require("axios");
 const bodyParser = require("body-parser");
@@ -9,8 +11,10 @@ const speech = require("@google-cloud/speech");
 const twilio = require("twilio");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { translate } = require("@vitalets/google-translate-api");
+const { FleetContextImpl } = require("twilio/lib/rest/preview/deployed_devices/fleet.js");
 
 dotenv.config();
+connectDB();
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -71,7 +75,6 @@ app.post("/language-selection", (req, res) => {
     response.record({ maxLength: 120, action: `/handle-recording?language=${language}` });
     res.type("text/xml").send(response.toString());
 });
-
 // Handle recording and transcriptions
 app.post("/handle-recording", async (req, res) => {
     const recordingUrl = req.body.RecordingUrl;
@@ -79,7 +82,7 @@ app.post("/handle-recording", async (req, res) => {
     const selectedLanguage = req.query.language; // Get language from query parameter
 
     console.log("Incoming Request Body:", req.body); // Log incoming request
-    const userPhoneNumber = req.body.From;
+    const userPhoneNumber = req.body.From;;
     console.log(`User's phone number from the incoming request: ${userPhoneNumber}`);
 
     if (!recordingUrl || !callSid || !selectedLanguage) {
@@ -122,13 +125,40 @@ app.post("/handle-recording", async (req, res) => {
 
     if (genaiResults) {
         console.log("Generative AI analysis completed successfully.");
+
+        // Store the extracted info in MongoDB
+        const userData = {
+            name: genaiResults.names ? genaiResults.names.join(", ") : null, // Join names if multiple
+            phone: userPhoneNumber,
+            address: genaiResults.addresses ? genaiResults.addresses.join(", ") : null, // Join addresses if multiple
+            issue: genaiResults.issue || "N/A", // Default if no issue found
+            time: new Date(), // Current time
+            priority: "Medium", // Default priority
+            status: "Ongoing", // Default status
+            transcribed_text: transcriptionText,
+            audio: recordingUrl, // Store the recording URL or file name
+            location: {
+                latitude: null, // Set this when you have the user's location
+                longitude: null  // Set this when you have the user's location
+            },
+            team_assigned: "team_1", // Default team
+        };
+
+        // Save the new user data to the database
+        const user = new User(userData);
+        try {
+            await user.save();
+            console.log("User data saved successfully:", userData);
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
     } else {
         console.log("Generative AI analysis failed.");
     }
 
     // Sending SMS with location link
     const ngrokUrl = 'https://ced0-136-233-9-98.ngrok-free.app';
-    const locationLink = `${ngrokUrl}/get-location?callSid=${callSid}`;
+    const locationLink = `${ngrokUrl}/get-location?callSid=${callSid}&userPhoneNumber=${userPhoneNumber}`;
     await sendSmsWithLocationLink(userPhoneNumber, locationLink);
 
     fs.unlinkSync(fileName);
@@ -136,6 +166,7 @@ app.post("/handle-recording", async (req, res) => {
 
     res.send("Call recorded, transcribed, and analyzed successfully.");
 });
+
 
 // Function to send SMS with the location link
 async function sendSmsWithLocationLink(userPhoneNumber, locationLink) {
@@ -263,14 +294,26 @@ async function translateToEnglish(text, language) {
 // Extract information using Google AI and analyze
 async function extractInfoAndAnalyze(text) {
     const prompt = `
-    Given the following text:
-    
+   Given the following transcribed text:
+
     "${text}"
-    
-    1. Identify and extract all names (e.g., persons).
-    2. Identify and extract all addresses or places.
-    3. Analyze the sentiment and tell if the text mentions any disasters like fire, earthquake, crime, floods, etc.
-    4. Return the extracted names, addresses, and the disaster/issue in json format.
+
+    1. Identify and extract all names (e.g., persons involved).
+    2. Identify and extract all addresses or places mentioned in the text.
+    3. Identify the disaster or issue being described (e.g., fire, earthquake, robbery, flood, etc.).
+    4. Based on the nature of the disaster or issue, assign a priority level to the incident:
+        - Critical: Life-threatening emergencies or widespread disasters (e.g., fire in a hospital, earthquake, building collapse).
+        - High: Severe issues that require immediate attention (e.g., robbery with violence, severe floods, dangerous accident).
+        - Medium: Significant issues but not life-threatening (e.g., minor car accident, local power outage).
+        - Low: Non-emergency situations or minor issues (e.g., noise complaints, minor injuries).
+    5. Return the extracted names, addresses, the issue, and the assigned priority in the following JSON format:
+
+    {{
+        "Name": <Extracted Names>,
+        "Address": <Extracted Address>,
+        "Issue": <Extracted Issue>,
+        "Priority": <Assigned Priority>
+    }}
     `;
 
     try {
@@ -285,18 +328,33 @@ async function extractInfoAndAnalyze(text) {
 
 // Endpoint to capture user location
 app.get("/get-location", async (req, res) => {
+    console.log("Full Request Query:", req.query);
     const callSid = req.query.callSid;
-
-    console.log(`User clicked the location link for Call SID: ${callSid}.`);
+    console.log(callSid);
+    const userPhoneNumber = req.query.userPhoneNumber;
     const location = await getUserLocation();
-
+    console.log(userPhoneNumber);
+    const updatedUserPhoneNumber = "+" + userPhoneNumber.trim();
+    console.log(updatedUserPhoneNumber);
     if (location) {
         console.log("User's location captured:", location);
+        console.log("Latitude:", location.location.lat);
+        // Update the user record with the latitude and longitude
+        await User.updateMany(
+            { phone: updatedUserPhoneNumber }, // Find the user by phone number or unique identifier
+            {
+                $set: {
+                    "location.latitude": location.location.lat,
+                    "location.longitude": location.location.lng,
+                },
+            }
+        );
         res.send(`Thank you for sharing your location. Latitude: ${location.location.lat}, Longitude: ${location.location.lng}`);
     } else {
         res.status(500).send("Failed to retrieve location.");
     }
 });
+
 
 async function getUserLocation() {
     try {
