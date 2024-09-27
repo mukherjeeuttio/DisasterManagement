@@ -127,7 +127,8 @@ app.post("/handle-recording", async (req, res) => {
     }
 
     // Sending SMS with location link
-    const locationLink = `https://yourdomain.com/get-location?callSid=${callSid}`;
+    const ngrokUrl = 'https://ced0-136-233-9-98.ngrok-free.app';
+    const locationLink = `${ngrokUrl}/get-location?callSid=${callSid}`;
     await sendSmsWithLocationLink(userPhoneNumber, locationLink);
 
     fs.unlinkSync(fileName);
@@ -141,7 +142,7 @@ async function sendSmsWithLocationLink(userPhoneNumber, locationLink) {
     try {
         const message = await client.messages.create({
             body: `Please click the link to share your location: ${locationLink}`,
-            to: "+917003816564",
+            to: userPhoneNumber,
             from: process.env.TWILIO_PHONE_NUMBER,
         });
         console.log(`SMS sent successfully: ${message.sid}`);
@@ -283,15 +284,29 @@ async function extractInfoAndAnalyze(text) {
 }
 
 // Endpoint to capture user location
-app.get("/get-location", (req, res) => {
+app.get("/get-location", async (req, res) => {
     const callSid = req.query.callSid;
 
-
     console.log(`User clicked the location link for Call SID: ${callSid}.`);
-    console.log("User's location captured: Latitude: <LAT>, Longitude: <LONG>");
-    res.send("Thank you for sharing your location.");
+    const location = await getUserLocation();
+
+    if (location) {
+        console.log("User's location captured:", location);
+        res.send(`Thank you for sharing your location. Latitude: ${location.location.lat}, Longitude: ${location.location.lng}`);
+    } else {
+        res.status(500).send("Failed to retrieve location.");
+    }
 });
 
+async function getUserLocation() {
+    try {
+        const response = await axios.post(`https://www.googleapis.com/geolocation/v1/geolocate?key=${process.env.GOOGLE_MAP_API_KEY}`, {});
+        return response.data; // Return the location data
+    } catch (error) {
+        console.error("Error getting user location:", error);
+        return null; // Handle the error gracefully
+    }
+}
 
 // Start the Express server
 const PORT = process.env.PORT || 3000;
