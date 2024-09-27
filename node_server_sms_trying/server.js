@@ -44,7 +44,7 @@ app.post("/voice", (req, res) => {
     const response = new twilio.twiml.VoiceResponse();
     console.log("Incoming Request Body:", req.body);
     const gather = response.gather({ numDigits: 1, action: "/language-selection", method: "POST" });
-    gather.say("For English, press 1. Banglay Shunte hole 2 tipun. Hindi mein sunne ke liye 3 dabaye.");
+    gather.say("For English, press 1. Banglay Shunte hole 2 tipun. Hindi mein sunne ke liye 3 dabaye. Tamiḻ ikku 4 ai aḻuttavum. Telugu kōsaṁ 5 nokkaṇḍi");
     console.log("Voice response sent for language selection.");
     res.type("text/xml").send(response.toString());
 });
@@ -65,6 +65,12 @@ app.post("/language-selection", (req, res) => {
     } else if (selectedLanguage === "3") {
         language = "hi";
         message = "Aapne Hindi chuna hai. Kripya apne paristhiti ka varnan kare.";
+    } else if (selectedLanguage === "4") {  // Tamil selection
+        language = "ta";
+        message = "Neenga tamil therdnthu irukkinga. Daya seythu ungallin nilaiyai vivarikka.";
+    } else if (selectedLanguage === "5") {  // Telugu selection
+        language = "te";
+        message = "Mee Telugu enchaayaru. Daya chesi mee sthitini vivarimchandi.";
     } else {
         res.status(400).send("Invalid selection");
         console.error("Invalid language selection.");
@@ -77,6 +83,7 @@ app.post("/language-selection", (req, res) => {
     response.record({ maxLength: 120, action: `/handle-recording?language=${language}` });
     res.type("text/xml").send(response.toString());
 });
+
 // Handle recording and transcriptions
 app.post("/handle-recording", async (req, res) => {
     const recordingUrl = req.body.RecordingUrl;
@@ -146,7 +153,7 @@ app.post("/handle-recording", async (req, res) => {
                 latitude: null, // Set this when you have the user's location
                 longitude: null  // Set this when you have the user's location
             },
-            team_assigned: "team_1", // Default team
+            team_assigned: genaiResultsInJSON.Team_assigned, // Default team
         };
 
         // Save the new user data to the database
@@ -164,7 +171,7 @@ app.post("/handle-recording", async (req, res) => {
     // Sending SMS with location link
     const ngrokUrl = 'https://ced0-136-233-9-98.ngrok-free.app';
     const locationLink = `${ngrokUrl}/get-location?callSid=${callSid}&userPhoneNumber=${userPhoneNumber}`;
-    await sendSmsWithLocationLink(userPhoneNumber, locationLink);
+    // await sendSmsWithLocationLink(userPhoneNumber, locationLink);
 
     fs.unlinkSync(fileName);
     console.log(`Deleted temporary file: ${fileName}`);
@@ -279,10 +286,15 @@ function getLanguageCode(language) {
             return "hi-IN";
         case "bn":
             return "bn-IN";
+        case "ta": 
+            return "ta-IN";
+        case "te":
+            return "te-IN";
         default:
             return "en-US";
     }
 }
+
 
 function extractJsonFromGenAIResponse(genaiResults) {
     // Regular expression to match the JSON structure
@@ -346,19 +358,21 @@ async function extractInfoAndAnalyze(text) {
     1. Identify and extract all names (e.g., persons involved).
     2. Identify and extract all addresses or places mentioned in the text.
     3. Identify the disaster or issue being described (e.g., fire, earthquake, robbery, flood, etc.).
-    4. Based on the nature of the disaster or issue, assign a priority level to the incident:
+    4. Based on the nature of the disaster or issue, assign a priority level on a scale of 1-5 where 1 is least priority and 5 is high priority to the incident:
         - Critical: Life-threatening emergencies or widespread disasters (e.g., fire in a hospital, earthquake, building collapse).
         - High: Severe issues that require immediate attention (e.g., robbery with violence, severe floods, dangerous accident).
         - Medium: Significant issues but not life-threatening (e.g., minor car accident, local power outage).
         - Low: Non-emergency situations or minor issues (e.g., noise complaints, minor injuries).
-    5. Return the extracted names, addresses, the issue, and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
+    5. Return the extracted names, addresses, the issue, team assigned (e.g., Police, NDRF, Fire-brigade, Ambulance, Child Support, Women Helpline or any other team that you find relatable to the situation) and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
     6. Whatever response you are giving, give everything in JSON format. Even the string part should be in JSON.
 
     {{
         "Name": <Extracted Names>,
         "Address": <Extracted Address>,
         "Issue": <Extracted Issue>,
-        "Priority": <Assigned Priority>
+        "Priority": <Assigned Priority>,
+        "Team_assigned": <Assigned Team>
+
     }}
     `;
 
