@@ -133,7 +133,7 @@ app.post("/handle-recording", async (req, res) => {
             address: genaiResults.Address ? genaiResults.Address : null, // Join addresses if multiple
             issue: genaiResults.Issue || "N/A", // Default if no issue found
             time: new Date(), // Current time
-            priority: genaiResults.Issue || "Medium", // Default priority
+            priority: genaiResults.Priority || "Medium", // Default priority
             status: "Ongoing", // Default status
             transcribed_text: transcriptionText,
             audio: recordingUrl, // Store the recording URL or file name
