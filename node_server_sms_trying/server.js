@@ -1,6 +1,7 @@
 // Import required modules
 const express = require("express");
 const connectDB = require("./config/db.js");
+const cors = require("cors");
 const User = require("./model/userModel.js")
 const dotenv = require("dotenv");
 const axios = require("axios");
@@ -19,6 +20,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -409,6 +411,74 @@ async function getUserLocation() {
         return null; // Handle the error gracefully
     }
 }
+
+
+// Endpoint to get all users
+app.get("/users", async (req, res) => {
+    // console.log("Users end point triggered");z
+    try {
+        const users = await User.find(); // Retrieve all user documents
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error fetching users data:", error);
+        res.status(500).send("Failed to retrieve user data.");
+    }
+});
+
+// Endpoint to update the priority of a specific user record
+app.put("/update-priority", async (req, res) => {
+    const { _id, priority } = req.body; // Extract _id and new priority from request body
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(_id, { priority: priority }, { new: true });
+        if (updatedUser) {
+            res.status(200).json({ message: "Priority updated successfully", data: updatedUser });
+        } else {
+            res.status(404).send("User not found.");
+        }
+    } catch (error) {
+        console.error("Error updating priority:", error);
+        res.status(500).send("Failed to update priority.");
+    }
+});
+
+
+// Endpoint to update the team assigned to a specific user record
+app.put("/update-team", async (req, res) => {
+    const { _id, team_assigned } = req.body; // Extract _id and new team_assigned from request body
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(_id, { team_assigned: team_assigned }, { new: true });
+        if (updatedUser) {
+            res.status(200).json({ message: "Team assigned updated successfully", data: updatedUser });
+        } else {
+            res.status(404).send("User not found.");
+        }
+    } catch (error) {
+        console.error("Error updating team assignment:", error);
+        res.status(500).send("Failed to update team assignment.");
+    }
+});
+
+
+// Endpoint to update the status of a specific user record
+app.put("/update-status", async (req, res) => {
+    const { _id, status } = req.body; // Extract _id and new status from request body
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(_id, { status: status }, { new: true });
+        if (updatedUser) {
+            res.status(200).json({ message: "Status updated successfully", data: updatedUser });
+        } else {
+            res.status(404).send("User not found.");
+        }
+    } catch (error) {
+        console.error("Error updating status:", error);
+        res.status(500).send("Failed to update status.");
+    }
+});
+
+
 
 // Start the Express server
 const PORT = process.env.PORT || 3000;
