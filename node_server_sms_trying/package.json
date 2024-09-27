@@ -20,6 +20,7 @@
     "express": "^4.21.0",
     "fs": "^0.0.1-security",
     "google-auth-library": "^9.14.1",
+    "mongoose": "^8.7.0",
     "twilio": "^5.3.2"
   }
 }
