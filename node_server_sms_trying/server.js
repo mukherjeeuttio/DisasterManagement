@@ -128,12 +128,12 @@ app.post("/handle-recording", async (req, res) => {
 
         // Store the extracted info in MongoDB
         const userData = {
-            name: genaiResults.names ? genaiResults.names.join(", ") : null, // Join names if multiple
+            name: genaiResults.Name ? genaiResults.Name : null, // Join names if multiple
             phone: userPhoneNumber,
-            address: genaiResults.addresses ? genaiResults.addresses.join(", ") : null, // Join addresses if multiple
-            issue: genaiResults.issue || "N/A", // Default if no issue found
+            address: genaiResults.Address ? genaiResults.Address : null, // Join addresses if multiple
+            issue: genaiResults.Issue || "N/A", // Default if no issue found
             time: new Date(), // Current time
-            priority: "Medium", // Default priority
+            priority: genaiResults.Issue || "Medium", // Default priority
             status: "Ongoing", // Default status
             transcribed_text: transcriptionText,
             audio: recordingUrl, // Store the recording URL or file name
@@ -306,7 +306,7 @@ async function extractInfoAndAnalyze(text) {
         - High: Severe issues that require immediate attention (e.g., robbery with violence, severe floods, dangerous accident).
         - Medium: Significant issues but not life-threatening (e.g., minor car accident, local power outage).
         - Low: Non-emergency situations or minor issues (e.g., noise complaints, minor injuries).
-    5. Return the extracted names, addresses, the issue, and the assigned priority in the following JSON format:
+    5. Return the extracted names, addresses, the issue, and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
 
     {{
         "Name": <Extracted Names>,
