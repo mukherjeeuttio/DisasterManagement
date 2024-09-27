@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "acoustic-cirrus-436814-f8",
+  "private_key_id": "209edc71347ee99c4e0a74407276d016de06945c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCO+ugobB2MnuOQ\nI8OyxU7eWEFoM2+lHH4OWEAHo4XR6QYIS9DXjcrlHN1oCu/islMO9yW8O9SMHKYA\n5GUPg/xeOL8JGuWsjdqaIEaV1fpsSIVr+Xcfuhyl2aJS2DsJZqFFGuJAGodKVvKl\nWEJwIEW/nIerIBQmJkRdvCYvTv7O1p/i8MKy3qEyzEJYATXN2nIdC9Ux3AyXcN4H\nTePMEBb8RJCS1fE2cL0pHI2kRNme72EPxcAkAc2YzR6GG67mx2fadL5f6sP7LsM3\nxKfcQVqiWVeoS1xModf2j/GUI37NsxabmGirT5d1B/26Pj+hTaITMBJYioGkrRUW\nMV9++Xb7AgMBAAECggEACJbmYbmvafZVPNOhNJKpr8eehxhPKAMKFNBUnGdEj7Bp\nJkNwh7QjEPHtRr+HDlfgwucYpovAZsbSN2VN9IldAy4M7/ExN6ILLjPFLPtk89XE\nsJCU78Kzz0gMekY3ACDg8r1WnTvawWqix6/n+3ajQ6UVxpm2DCqqJ1vS8W5t9iMt\nchTJWAawJest15zOx5ys9E2RxLbrLw0xr1qMxwpNfosr+eUikX7trfbaPcbWEkNU\nfhx9YMF+KdByG2Gltjehx1BPsaULuFNf9+GIK8d4ZMrQdK/VEQHVAEOgKGKK7eLy\ne0cIp7YuW80GOs19b0uMMygT/RhT0mp0wefPXH81vQKBgQDDMfb26IujviMqXoSi\nv7BPVJygucQ6xOYKnAeK3thSnb5t4p1/+u1eOx/6y6YjVFyzIUs+KgWXmmnls8wt\n3nENEnnYXFJwkWCNGG77Vtb/+X9IZDzNBQKDNhQ77akwyMLjDHIshfXTdKbwGlDj\n4WStUVs60Jtyln91jFdCf36uRwKBgQC7hP+8y5phQh3lZOTdT0maOWB8WJPWTEQL\n6E+NcihXa8pvDzYJ8uId3l261u/2BsEiZap4EGnRbEgPiXgGx5QepuQK53a2JTGy\nOigLVGfC8e/BJ35HINYp+vgfRapu+IVBJ12wxGtWLf//qaI982ivwvOEPtWiSHCV\nx/auB7hHrQKBgQCefIclWxNmVA+Ba1UOP84L24uBBNRLU2vk2WNWYjIKgoIH/qQb\nMcZhaGhC3e97aBgMadAKHVyFB59MHnx+EcqA7qt3/R4CwEdAyMHz2UKgfBfY02p6\nnMK5fsNXFVT2g0uZxpU9iVdb5a9V7EgZfvybrR8B1jchBwlejCCdoZ9eKQKBgEKX\nK133C56oJQe2OZPhuSh8YagmqHE8ahm0aLO5K1xIGf4wb6c+yk+DDNPxygsbQPCf\nG9dBNOK6yihCUA5QR2hPKcI5ii2Krcg14MyNL7/JvLNh+/T0UzlbN0ubqLd5p5CI\nkzvXtKpI8ZTvv36ydqWb3HBFBAZ6JQj7lr0cXrONAoGBAIGDhjYc6+2nglLAD8/F\nQNzooG7F6LcKoJld+u7jY+Jsi5KFL3EWkiejPYLHwD3+uOiax3fYBK0Gkqu/3Zb+\nyCyPp69N+i8zoc3tPWKgLJK9xC3e4nJpcwEuEgI8EGRklnGTADVn+qJ3TNM88ij7\n+kJp+aM3hwI/KIipEQlNQjsa\n-----END PRIVATE KEY-----\n",
+  "client_email": "mukherjeeuttio@acoustic-cirrus-436814-f8.iam.gserviceaccount.com",
+  "client_id": "102824957144798744592",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/mukherjeeuttio%40acoustic-cirrus-436814-f8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
