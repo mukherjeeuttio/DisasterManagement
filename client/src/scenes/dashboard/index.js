@@ -51,7 +51,7 @@ const Dashboard = () => {
         >
             <Rec1 onTaskSelect={handleTaskSelection} selectedTask={selectedTask} />
             <Rec2 selectedTask={selectedTask} />
-            <Rec3 selectedAddress={selectedTask ? selectedTask.address : ""} />
+            <Rec3 selectedTask={selectedTask} />
         </Box>
     );
 };

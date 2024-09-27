@@ -7,7 +7,7 @@ const Rec1 = ({ onTaskSelect, selectedTask }) => {
     <DashBox gridArea="a" >
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
         <div style={{ flex: "0 0 25%",marginTop: "0", padding: "0.25rem"}}>
-          <LiveTranscription selectedTranscription={selectedTask?.transcription} />
+          <LiveTranscription selectedTranscription={selectedTask?.transcribed_text} />
         </div>
         <div style={{ flex: "0 0 75%", marginTop: "0rem" }}>
           <DataTable onRowClick={onTaskSelect} />
