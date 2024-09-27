@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     priority: { type: String, default: "Medium" },
     status: { type: String, default: "Ongoing" },
     transcribed_text: { type: String, default: null },
+    translated_text: { type: String, default: null },
     audio: { type: String, default: null, default: null },
     location: {
         latitude: { type: Number, default: null },

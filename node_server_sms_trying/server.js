@@ -121,21 +121,24 @@ app.post("/handle-recording", async (req, res) => {
     }
 
     const genaiResults = await extractInfoAndAnalyze(translatedText);
+    const genaiResultsInJSON = extractJsonFromGenAIResponse(genaiResults);
+    // extractJsonFromGenAIResponse(genaiResults);
     console.log("Generative AI Analysis Results:", genaiResults);
-
+    console.log("Generative AI Analysis Results in JSON:", genaiResultsInJSON);
     if (genaiResults) {
         console.log("Generative AI analysis completed successfully.");
 
         // Store the extracted info in MongoDB
         const userData = {
-            name: genaiResults.Name ? genaiResults.Name : null, // Join names if multiple
+            name: genaiResultsInJSON.Name ? genaiResultsInJSON.Name : null, // Join names if multiple
             phone: userPhoneNumber,
-            address: genaiResults.Address ? genaiResults.Address : null, // Join addresses if multiple
-            issue: genaiResults.Issue || "N/A", // Default if no issue found
+            address: genaiResultsInJSON.Address ? genaiResultsInJSON.Address : null, // Join addresses if multiple
+            issue: genaiResultsInJSON.Issue || "N/A", // Default if no issue found
             time: new Date(), // Current time
-            priority: genaiResults.Priority || "Medium", // Default priority
+            priority: genaiResultsInJSON.Priority || "Medium", // Default priority
             status: "Ongoing", // Default status
             transcribed_text: transcriptionText,
+            translated_text: translatedText,
             audio: recordingUrl, // Store the recording URL or file name
             location: {
                 latitude: null, // Set this when you have the user's location
@@ -279,6 +282,46 @@ function getLanguageCode(language) {
     }
 }
 
+function extractJsonFromGenAIResponse(genaiResults) {
+    // Regular expression to match the JSON structure
+    const jsonMatch = genaiResults.match(/```json([\s\S]*?)```/);
+
+    if (jsonMatch && jsonMatch[1]) {
+        try {
+            // Parse and format the extracted JSON string
+            const extractedJson = JSON.parse(jsonMatch[1]);
+            console.log("Extracted JSON:", JSON.stringify(extractedJson, null, 2));
+            return extractedJson; // Return the parsed JSON object if needed elsewhere
+        } catch (error) {
+            console.error("Failed to parse extracted JSON:", error);
+            return null;
+        }
+    } else {
+        console.error("No JSON found in the provided string.");
+        return null;
+    }
+}
+
+// Example usage:
+// const sampleResponse = `Generative AI Analysis Results: \`\`\`json
+// {
+//     "Name": [],
+//     "Address": [],
+//     "Issue": "Reaching water, potential drowning",
+//     "Priority": "Critical"
+// }
+// \`\`\`
+
+// **Explanation:**
+
+// * **Name:** No names are mentioned in the text.
+// * **Address:** No addresses or specific places are mentioned.
+// * **Issue:** The phrase "reached water" strongly suggests the person is in a situation where they are in or near water, possibly drowning.
+// * **Priority:** This is a critical situation because drowning is a life-threatening emergency. 
+// `;
+
+
+
 // Translate text to English using @vitalets/google-translate-api
 async function translateToEnglish(text, language) {
     try {
@@ -307,6 +350,7 @@ async function extractInfoAndAnalyze(text) {
         - Medium: Significant issues but not life-threatening (e.g., minor car accident, local power outage).
         - Low: Non-emergency situations or minor issues (e.g., noise complaints, minor injuries).
     5. Return the extracted names, addresses, the issue, and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
+    6. Whatever response you are giving, give everything in JSON format. Even the string part should be in JSON.
 
     {{
         "Name": <Extracted Names>,
