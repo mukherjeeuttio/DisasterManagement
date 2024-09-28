@@ -530,6 +530,20 @@ app.post("/register", async (req, res) => {
 });
 
 
+app.get("/registered-users", async (req, res) => {
+    try {
+        // Fetch all registered users from the database
+        const users = await RegisteredUser.find();
+
+        // Return the users as a JSON response
+        res.status(200).json({ message: "List of registered users", data: users });
+    } catch (error) {
+        console.error("Error fetching registered users:", error);
+        res.status(500).json({ message: "Server error. Failed to fetch users." });
+    }
+});
+
+
 // Start the Express server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
