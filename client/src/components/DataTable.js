@@ -241,10 +241,10 @@ const DataTable = ({ onRowClick = () => {} }) => {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             sx={{
-              "& .MuiTablePagination-toolbar": { backgroundColor: theme.palette.background.default },
-              "& .MuiTablePagination-selectRoot": { backgroundColor: theme.palette.background.default },
-              "& .MuiTablePagination-displayedRows": { color: theme.palette.text.primary },
-              "& .MuiTablePagination-selectIcon": { color: theme.palette.text.primary },
+              "& .MuiTablePagination-toolbar": { backgroundColor: '#12efc8' },
+              "& .MuiTablePagination-selectRoot": { backgroundColor:'#12efc8' },
+              "& .MuiTablePagination-displayedRows": { color: 'black' },
+              "& .MuiTablePagination-selectIcon": { color: 'black' },
             }}
           />
         </TableContainer>
