@@ -43,7 +43,7 @@ const getPriorityStyles = (priority) => {
 };
 
 const statusOptions = ["Ongoing", "Resolved", "Critical"];
-const priorityOptions = ["5", "4", "3","2","1"];
+const priorityOptions = ["5", "4", "3", "2", "1"];
 
 const DataTable = ({ onRowClick = () => {} }) => {
   const theme = useTheme();
@@ -137,6 +137,7 @@ const DataTable = ({ onRowClick = () => {} }) => {
                 <TableCell sx={{ color: '#12efc8' }}>Time</TableCell>
                 <TableCell sx={{ color: '#12efc8' }}>Priority</TableCell>
                 <TableCell sx={{ color: '#12efc8' }}>Status</TableCell>
+                <TableCell sx={{ color: '#12efc8' }}>Location</TableCell> {/* New Column Header */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -217,38 +218,40 @@ const DataTable = ({ onRowClick = () => {} }) => {
                         ))}
                       </Select>
                     </TableCell>
+                    <TableCell sx={{ color: '#F0F7FD' }}>
+                      {row.location.latitude && row.location.longitude
+                        ? `${row.location.latitude.toFixed(6)}, ${row.location.longitude.toFixed(6)}`
+                        : "N/A"}
+                    </TableCell> {/* New Column Data */}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ color: '#F0F7FD' }}>
-                    No data available.
-                  </TableCell>
+                  <TableCell colSpan={6} sx={{ textAlign: "center", color: '#F0F7FD' }}>No Data Available</TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "& .MuiTablePagination-toolbar": { backgroundColor: theme.palette.background.default },
+              "& .MuiTablePagination-selectRoot": { backgroundColor: theme.palette.background.default },
+              "& .MuiTablePagination-displayedRows": { color: theme.palette.text.primary },
+              "& .MuiTablePagination-selectIcon": { color: theme.palette.text.primary },
+            }}
+          />
         </TableContainer>
       )}
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          backgroundColor: theme.palette.background.light,
-          color: "#12efc8",
-        }}
-      />
     </Box>
   );
 };
-
-
-
 
 export default DataTable;
 
