@@ -63,7 +63,7 @@ const RegisteredUserInfo = ({ onRowClick = () => {} }) => {
           <Table sx={{ minWidth: '100%', color: '#F0F7FD' }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: theme.palette.background.light, position: 'sticky', top: 0, zIndex: 1 }}>
-                <TableCell sx={{ color: '#12efc8' }}>Name</TableCell>
+                <TableCell sx={{ color: '#12efc8' }}>POC Name</TableCell>
                 <TableCell sx={{ color: '#12efc8' }}>Phone</TableCell>
                 <TableCell sx={{ color: '#12efc8' }}>Email</TableCell>
                 <TableCell sx={{ color: '#12efc8' }}>Address</TableCell>
