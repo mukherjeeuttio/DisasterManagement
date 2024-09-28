@@ -61,7 +61,7 @@ const RegistrationForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    axios.post('https://4454-136-233-9-98.ngrok-free.app/register', formData)
+    axios.post('https://a102-136-233-9-98.ngrok-free.app/register', formData)
       .then((response) => {
         if (response.status === 201) {
           setFormData({
