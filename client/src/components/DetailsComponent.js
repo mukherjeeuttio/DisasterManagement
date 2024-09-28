@@ -3,8 +3,8 @@ import { Box, Typography, Select, MenuItem, Chip } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import axios from "axios";
 
-const personnelOptions = ["team_1", "Sarah Lee", "James Carter", "Emily Clark"];
-const priorityOptions = ["High", "Medium", "Low"];
+const personnelOptions = ["Police", "Local Doctor", "NDRF", "Ambulance","Fire-brigade"];
+const priorityOptions = ["5", "4", "3","2","1"];
 const statusOptions = ["Ongoing", "Resolved", "Critical"];
 
 const getStatusStyles = (status) => {
