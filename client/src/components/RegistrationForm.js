@@ -1,5 +1,6 @@
 // RegistrationForm.js
 import React, { useState } from 'react';
+import axios from 'axios';
 import { 
   Box, 
   TextField, 
@@ -12,13 +13,13 @@ import { theme } from '../theme';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
-    userName: '',
+    name: '',
     phone: '',
     email: '',
     address: '',
     propertyType: '',
     propertyName: '',
-    numberOfPeople: ''
+    noOfPeople: ''
   });
 
   const handleChange = (e) => {
@@ -28,9 +29,21 @@ const RegistrationForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here (e.g., API call)
+
+    // Call the backend API using Axios
+    axios.post('https://9bf6-136-233-9-98.ngrok-free.app/register', formData)
+        .then((response) => {
+            // Handle the response data
+            console.log('Response:', response.data);
+        })
+        .catch((error) => {
+            // Handle any errors
+            console.error('Error:', error);
+        });
+
     console.log(formData);
-  };
+};
+
 
   return (
     <Grid2 
@@ -47,7 +60,7 @@ const RegistrationForm = () => {
           <form onSubmit={handleSubmit}>
             <Box display="flex" flexDirection="column" gap={2}>
               <TextField
-                name="userName"
+                name="name"
                 label="User Name"
                 variant="outlined"
                 onChange={handleChange}
@@ -96,7 +109,7 @@ const RegistrationForm = () => {
                 required
               />
               <TextField
-                name="numberOfPeople"
+                name="noOfPeople"
                 label="Approx Number of People Living"
                 variant="outlined"
                 onChange={handleChange}
