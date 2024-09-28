@@ -56,7 +56,7 @@ const DataTable = ({ onRowClick = () => {} }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://f084-136-233-9-98.ngrok-free.app/users", {
+        const response = await axios.get("https://4454-136-233-9-98.ngrok-free.app/users", {
           headers: {
             'ngrok-skip-browser-warning': '70',
           },
@@ -84,7 +84,7 @@ const DataTable = ({ onRowClick = () => {} }) => {
 
   const updatePriorityInDB = async (id, newPriority) => {
     try {
-      await axios.put("https://f084-136-233-9-98.ngrok-free.app/update-priority", {
+      await axios.put("https://4454-136-233-9-98.ngrok-free.app/update-priority", {
         _id: id,
         priority: newPriority,
       });
@@ -95,7 +95,7 @@ const DataTable = ({ onRowClick = () => {} }) => {
 
   const updateStatusInDB = async (id, newStatus) => {
     try {
-      await axios.put("https://f084-136-233-9-98.ngrok-free.app/update-status", {
+      await axios.put("https://4454-136-233-9-98.ngrok-free.app/update-status", {
         _id: id,
         status: newStatus,
       });

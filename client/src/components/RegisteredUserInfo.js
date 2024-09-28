@@ -24,7 +24,7 @@ const RegisteredUserInfo = ({ onRowClick = () => {} }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://f084-136-233-9-98.ngrok-free.app/registered-users", {
+        const response = await axios.get("https://4454-136-233-9-98.ngrok-free.app/registered-users", {
           headers: {
             'ngrok-skip-browser-warning': '70',
           },
