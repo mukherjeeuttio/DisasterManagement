@@ -3,6 +3,7 @@ const express = require("express");
 const connectDB = require("./config/db.js");
 const cors = require("cors");
 const User = require("./model/userModel.js")
+const RegisteredUser = require("./model/registeredUserModel.js")
 const dotenv = require("dotenv");
 const axios = require("axios");
 const bodyParser = require("body-parser");
@@ -141,7 +142,7 @@ app.post("/handle-recording", async (req, res) => {
         const userData = {
             name: genaiResultsInJSON.Name ? genaiResultsInJSON.Name : null, // Join names if multiple
             phone: userPhoneNumber,
-            address: genaiResultsInJSON.Address ? genaiResultsInJSON.Address : null, // Join addresses if multiple
+            address: genaiResultsInJSON.Address ? genaiResultsInJSON.Address : "VIT,Vellore", // Join addresses if multiple
             issue: genaiResultsInJSON.Issue || "N/A", // Default if no issue found
             time: new Date(), // Current time
             priority: genaiResultsInJSON.Priority || "Medium", // Default priority
@@ -286,7 +287,7 @@ function getLanguageCode(language) {
             return "hi-IN";
         case "bn":
             return "bn-IN";
-        case "ta": 
+        case "ta":
             return "ta-IN";
         case "te":
             return "te-IN";
@@ -363,7 +364,7 @@ async function extractInfoAndAnalyze(text) {
         - High: Severe issues that require immediate attention (e.g., robbery with violence, severe floods, dangerous accident).
         - Medium: Significant issues but not life-threatening (e.g., minor car accident, local power outage).
         - Low: Non-emergency situations or minor issues (e.g., noise complaints, minor injuries).
-    5. Return the extracted names, addresses, the issue, team assigned (e.g., Police, NDRF, Fire-brigade, Ambulance, Child Support, Women Helpline or any other team that you find relatable to the situation) and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
+    5. Return the extracted names, addresses, the issue, team assigned (choose only one on the basis of importance)(e.g., Police, NDRF, Fire-brigade, Ambulance, Child Support, Women Helpline, Local Doctor or any other team that you find relatable to the situation) and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
     6. Whatever response you are giving, give everything in JSON format. Even the string part should be in JSON.
 
     {{
@@ -492,6 +493,41 @@ app.put("/update-status", async (req, res) => {
     }
 });
 
+
+app.post("/register", async (req, res) => {
+    console.log("Register endpoint triggered");
+    console.log("Incoming Request Body:", req.body);
+    const { name, phone, address, propertyType, noOfPeople, email, propertyName } = req.body;
+
+    // Check if phone number is provided, as it's a required field
+    if (!name || !phone || !address || !propertyType || !email) {
+        return res.status(400).json({
+            message: "All fields (name, phone, address, propertyType, and email) are required.",
+        });
+    }
+
+    try {
+        // Create a new user instance
+        const newUser = new RegisteredUser({
+            name,
+            phone,
+            address,
+            propertyType,
+            propertyName,
+            noOfPeople,
+            email,
+        });
+
+        // Save to the database
+        await newUser.save();
+        console.log("User registered successfully:", newUser);
+        // Return success response
+        res.status(201).json({ message: "User registered successfully!", data: newUser });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).json({ message: "Server error. Failed to register user." });
+    }
+});
 
 
 // Start the Express server
