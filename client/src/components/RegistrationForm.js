@@ -1,4 +1,3 @@
-// RegistrationForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { 
@@ -7,9 +6,37 @@ import {
   Button, 
   Typography, 
   Paper, 
-  Grid2
-} from '@mui/material';
-import { theme } from '../theme'; 
+  Grid, 
+  Snackbar, 
+  Alert 
+} from '@mui/material'; 
+import { styled } from '@mui/material/styles'; 
+
+const StyledPaper = styled(Paper)({
+  padding: '40px',
+  borderRadius: '12px',
+  backgroundColor: '#333',
+  color: '#fff',
+  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+});
+
+const StyledButton = styled(Button)({
+  backgroundColor: '#007BFF',
+  color: '#fff',
+  fontWeight: 'bold',
+  marginTop: '20px',
+  '&:hover': {
+    backgroundColor: '#0056b3',
+  },
+});
+
+const StyledTypography = styled(Typography)({
+  fontSize: '28px',
+  fontWeight: 'bold',
+  marginBottom: '20px',
+  textAlign: 'center',
+  color: '#fff',
+});
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +49,10 @@ const RegistrationForm = () => {
     noOfPeople: ''
   });
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -30,33 +61,50 @@ const RegistrationForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Call the backend API using Axios
-    axios.post('https://9bf6-136-233-9-98.ngrok-free.app/register', formData)
-        .then((response) => {
-            // Handle the response data
-            console.log('Response:', response.data);
-        })
-        .catch((error) => {
-            // Handle any errors
-            console.error('Error:', error);
-        });
+    axios.post('https://f084-136-233-9-98.ngrok-free.app/register', formData)
+      .then((response) => {
+        if (response.status === 201) {
+          setFormData({
+            name: '',
+            phone: '',
+            email: '',
+            address: '',
+            propertyType: '',
+            propertyName: '',
+            noOfPeople: ''
+          });
+          setSnackbarMessage('User Registered Successfully');
+          setSnackbarSeverity('success');
+          setOpenSnackbar(true);
+        } else {
+          setSnackbarMessage('Registration failed. Please try again.');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
+        }
+      })
+      .catch((error) => {
+        setSnackbarMessage('Error: ' + error.message);
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+      });
+  };
 
-    console.log(formData);
-};
-
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   return (
-    <Grid2 
+    <Grid 
       container 
       justifyContent="center" 
       alignItems="center" 
-      style={{ height: '100vh' }}
+      style={{ height: '100vh', backgroundColor: '#1c1c1c' }} 
     >
-      <Grid2 item xs={12} sm={8} md={6} lg={4}>
-        <Paper elevation={3} style={{ padding: '20px' }}>
-          <Typography variant="h2" align="center" gutterBottom>
+      <Grid item xs={12} sm={8} md={6} lg={4}>
+        <StyledPaper>
+          <StyledTypography>
             Registration Form
-          </Typography>
+          </StyledTypography>
           <form onSubmit={handleSubmit}>
             <Box display="flex" flexDirection="column" gap={2}>
               <TextField
@@ -65,7 +113,10 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
+                value={formData.name}
                 required
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
               <TextField
                 name="phone"
@@ -73,7 +124,10 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
+                value={formData.phone}
                 required
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
               <TextField
                 name="email"
@@ -81,8 +135,9 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
-                required
-                type="email"
+                value={formData.email}
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
               <TextField
                 name="address"
@@ -90,7 +145,10 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
+                value={formData.address}
                 required
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
               <TextField
                 name="propertyType"
@@ -98,7 +156,10 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
+                value={formData.propertyType}
                 required
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
               <TextField
                 name="propertyName"
@@ -106,7 +167,9 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
-                required
+                value={formData.propertyName}
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
               <TextField
                 name="noOfPeople"
@@ -114,22 +177,38 @@ const RegistrationForm = () => {
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
-                required
+                value={formData.noOfPeople}
                 type="number"
+                InputLabelProps={{ style: { color: '#fff' } }}
+                InputProps={{ style: { color: '#fff', backgroundColor: '#444' } }}
               />
-              <Button
+              <StyledButton
                 variant="contained"
                 type="submit"
-                color="primary"
-                style={{ marginTop: '20px' }}
+                fullWidth
               >
                 Register
-              </Button>
+              </StyledButton>
             </Box>
           </form>
-        </Paper>
-      </Grid2>
-    </Grid2>
+        </StyledPaper>
+      </Grid>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbarSeverity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Grid>
   );
 };
 

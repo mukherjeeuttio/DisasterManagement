@@ -5,7 +5,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Navbar from "./scenes/navbar";
 import Dashboard from "./scenes/dashboard";
 import RegistrationForm from "./components/RegistrationForm"; // Import the RegistrationForm component
-
+import RegisteredUserInfo from "./components/RegisteredUserInfo";
 function App() {
   const theme = useMemo(() => createTheme(themeSettings), []);
 
@@ -19,6 +19,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/register" element={<RegistrationForm />} /> {/* Add this route */}
+              <Route path="/registered-users" element={<RegisteredUserInfo />} />
             </Routes>
           </Box>
         </ThemeProvider>

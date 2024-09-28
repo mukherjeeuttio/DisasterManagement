@@ -44,7 +44,7 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
   // API call to update status
   const updateStatusInDB = async (newStatus) => {
     try {
-      const response = await axios.put("https://9bf6-136-233-9-98.ngrok-free.app/update-status", {
+      const response = await axios.put("https://f084-136-233-9-98.ngrok-free.app/update-status", {
         _id: selectedData._id,
         status: newStatus,
       });
@@ -58,7 +58,7 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
   // API call to update priority
   const updatePriorityInDB = async (newPriority) => {
     try {
-      const response = await axios.put("https://9bf6-136-233-9-98.ngrok-free.app/update-priority", {
+      const response = await axios.put("https://f084-136-233-9-98.ngrok-free.app/update-priority", {
         _id: selectedData._id,
         priority: newPriority,
       });
@@ -72,7 +72,7 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
   // API call to update team assigned
   const updateTeamInDB = async (newTeam) => {
     try {
-      const response = await axios.put("https://9bf6-136-233-9-98.ngrok-free.app/update-team", {
+      const response = await axios.put("https://f084-136-233-9-98.ngrok-free.app/update-team", {
         _id: selectedData._id,
         team_assigned: newTeam,
       });
