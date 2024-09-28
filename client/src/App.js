@@ -3,7 +3,8 @@ import { createTheme, ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { themeSettings } from "./theme";
 import { Routes, Route, BrowserRouter } from "react-router-dom"; 
 import Navbar from "./scenes/navbar";
-import Dashboard from "./scenes/dashboard"
+import Dashboard from "./scenes/dashboard";
+import RegistrationForm from "./components/RegistrationForm"; // Import the RegistrationForm component
 
 function App() {
   const theme = useMemo(() => createTheme(themeSettings), []);
@@ -17,6 +18,7 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/register" element={<RegistrationForm />} /> {/* Add this route */}
             </Routes>
           </Box>
         </ThemeProvider>

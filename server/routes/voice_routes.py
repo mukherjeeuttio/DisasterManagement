@@ -1,6 +1,6 @@
 # routes/voice_routes.py
 import os
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from services.twilio_service import create_voice_response, gather_language_selection_message
 from services.recording_service import download_recording
 from services.gcp_speech_to_text_service import transcribe_audio
@@ -42,11 +42,16 @@ def language_selection():
     
     return str(resp)  # Convert to string
 
+from flask import session
+
 @voice_bp.route("/handle-recording", methods=['POST'])
 def handle_recording():
     recording_url = request.form.get("RecordingUrl")
     call_sid = request.form.get("CallSid")
-    selected_language = request.environ.get('selected_language')
+    selected_language = session.get('selected_language')  # Get selected language from session
+
+    # Debugging print to ensure the selected language is correct
+    print(f"Selected language in handle_recording: {selected_language}")
 
     if not recording_url or not call_sid:
         return jsonify({"error": "Missing data from Twilio"}), 400
@@ -65,6 +70,7 @@ def handle_recording():
     # Translate to English if needed
     if selected_language in ['hi', 'bn']:
         transcription_text = translate_to_english(transcription_text, selected_language)
+
     print(f"Transcribed Text: {transcription_text}")
     genai_results = extract_info_and_analyze(transcription_text)
 
@@ -73,16 +79,6 @@ def handle_recording():
     else:
         print("Generative AI analysis failed.")
 
-    try:
-        store_transcription_data(transcribed_text=transcription_text, ai_response=genai_results)
-        print("Data stored in MongoDB successfully")
-    except Exception as e:
-        print(f"Error storing data in MongoDB: {e}")
-        return jsonify({"error": "Failed to store transcription data"}), 500
     # Clean up
     os.remove(file_name)
-    return jsonify({
-        "message": "Call recorded, transcribed, and analyzed successfully.",
-        "trancribed_text": transcription_text,
-        "ai_response": genai_results
-})
+    return jsonify({"message": "Call recorded, transcribed, and analyzed successfully."})
