@@ -170,7 +170,7 @@ app.post("/handle-recording", async (req, res) => {
     }
 
     // Sending SMS with location link
-    const ngrokUrl = 'https://ced0-136-233-9-98.ngrok-free.app';
+    const ngrokUrl = 'https://4454-136-233-9-98.ngrok-free.app';
     const locationLink = `${ngrokUrl}/get-location?callSid=${callSid}&userPhoneNumber=${userPhoneNumber}`;
     // await sendSmsWithLocationLink(userPhoneNumber, locationLink);
 
@@ -364,7 +364,7 @@ async function extractInfoAndAnalyze(text) {
         - High: Severe issues that require immediate attention (e.g., robbery with violence, severe floods, dangerous accident).
         - Medium: Significant issues but not life-threatening (e.g., minor car accident, local power outage).
         - Low: Non-emergency situations or minor issues (e.g., noise complaints, minor injuries).
-    5. Return the extracted names, addresses, the issue, team assigned (choose only one on the basis of importance)(e.g., Police, NDRF, Fire-brigade, Ambulance, Child Support, Women Helpline, Local Doctor or any other team that you find relatable to the situation) and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
+    5. Return the extracted names (should be in string format), addresses(should be in string format), the issue(should be in string format), team assigned (choose only one on the basis of importance)(e.g., Police, NDRF, Fire-brigade, Ambulance, Child Support, Women Helpline, Local Doctor or any other team that you find relatable to the situation) and the assigned priority in the following JSON format (follow it very strictly even the case of the keys):
     6. Whatever response you are giving, give everything in JSON format. Even the string part should be in JSON.
 
     {{
@@ -500,7 +500,7 @@ app.post("/register", async (req, res) => {
     const { name, phone, address, propertyType, noOfPeople, email, propertyName } = req.body;
 
     // Check if phone number is provided, as it's a required field
-    if (!name || !phone || !address || !propertyType || !email) {
+    if (!name || !phone || !address || !propertyType) {
         return res.status(400).json({
             message: "All fields (name, phone, address, propertyType, and email) are required.",
         });
@@ -521,7 +521,6 @@ app.post("/register", async (req, res) => {
         // Save to the database
         await newUser.save();
         console.log("User registered successfully:", newUser);
-        // Return success response
         res.status(201).json({ message: "User registered successfully!", data: newUser });
     } catch (error) {
         console.error("Error registering user:", error);
@@ -532,11 +531,8 @@ app.post("/register", async (req, res) => {
 
 app.get("/registered-users", async (req, res) => {
     try {
-        // Fetch all registered users from the database
         const users = await RegisteredUser.find();
-
-        // Return the users as a JSON response
-        res.status(200).json({ message: "List of registered users", data: users });
+        res.status(200).json({ users });
     } catch (error) {
         console.error("Error fetching registered users:", error);
         res.status(500).json({ message: "Server error. Failed to fetch users." });
