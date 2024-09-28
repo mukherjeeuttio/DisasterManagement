@@ -109,7 +109,7 @@ const RegistrationForm = () => {
             <Box display="flex" flexDirection="column" gap={2}>
               <TextField
                 name="name"
-                label="User Name"
+                label="Name of Point of Contact"
                 variant="outlined"
                 onChange={handleChange}
                 fullWidth
