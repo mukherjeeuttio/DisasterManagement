@@ -1,32 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Select, MenuItem, Chip } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
+import axios from "axios";
 
-const personnelOptions = ["Mike Davis", "Sarah Lee", "James Carter", "Emily Clark"];
-const priorityOptions = ["High", "Medium", "Low"]; // Define priority options
-const statusOptions = ["Ongoing", "Resolved", "Critical"]; // Define status options
+const personnelOptions = ["Police", "Local Doctor", "NDRF", "Ambulance","Fire-brigade"];
+const priorityOptions = ["5", "4", "3","2","1"];
+const statusOptions = ["Ongoing", "Resolved", "Critical"];
 
 const getStatusStyles = (status) => {
   switch (status) {
     case "Ongoing":
-      return { backgroundColor: "#FFA726", color: "black" }; // Orange for Ongoing
+      return { backgroundColor: "#FFA726", color: "black" };
     case "Resolved":
-      return { backgroundColor: "#66BB6A", color: "white" }; // Green for Resolved
+      return { backgroundColor: "#66BB6A", color: "white" };
     case "Critical":
-      return { backgroundColor: "#EF5350", color: "white" }; // Red for Critical
+      return { backgroundColor: "#EF5350", color: "white" };
     default:
-      return { backgroundColor: "#E0E0E0", color: "black" }; // Default grey
+      return { backgroundColor: "#E0E0E0", color: "black" };
   }
 };
 
 const getPriorityStyles = (priority) => {
   switch (priority) {
     case "High":
-      return { backgroundColor: "#EF5350", color: "white" }; // Orange Red
+      return { backgroundColor: "#EF5350", color: "white" };
     case "Medium":
-      return { backgroundColor: "#FFA726", color: "black" }; // Gold
+      return { backgroundColor: "#FFA726", color: "black" };
     case "Low":
-      return { backgroundColor: "#66BB6A", color: "white" }; // Lime Green
+      return { backgroundColor: "#66BB6A", color: "white" };
     default:
       return { backgroundColor: "#fff", color: "#000" };
   }
@@ -34,35 +35,85 @@ const getPriorityStyles = (priority) => {
 
 const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onPriorityChange }) => {
   const theme = useTheme();
+  const [error, setError] = useState(null);
 
   if (!selectedData) {
     return <Typography variant="h6" sx={{ color: theme.palette.grey[500] }}>Select a row to see details</Typography>;
   }
 
+  // API call to update status
+  const updateStatusInDB = async (newStatus) => {
+    try {
+      const response = await axios.put("https://a102-136-233-9-98.ngrok-free.app/update-status", {
+        _id: selectedData._id,
+        status: newStatus,
+      });
+      console.log("Status updated:", response.data);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      setError("Failed to update status. Please try again.");
+    }
+  };
+
+  // API call to update priority
+  const updatePriorityInDB = async (newPriority) => {
+    try {
+      const response = await axios.put("https://a102-136-233-9-98.ngrok-free.app/update-priority", {
+        _id: selectedData._id,
+        priority: newPriority,
+      });
+      console.log("Priority updated:", response.data);
+    } catch (err) {
+      console.error("Error updating priority:", err);
+      setError("Failed to update priority. Please try again.");
+    }
+  };
+
+  // API call to update team assigned
+  const updateTeamInDB = async (newTeam) => {
+    try {
+      const response = await axios.put("https://a102-136-233-9-98.ngrok-free.app/update-team", {
+        _id: selectedData._id,
+        team_assigned: newTeam,
+      });
+      console.log("Team assigned updated:", response.data);
+    } catch (err) {
+      console.error("Error updating team:", err);
+      setError("Failed to update team assignment. Please try again.");
+    }
+  };
+
   const handleStatusChange = (event) => {
-    onStatusChange(event.target.value);
+    const newStatus = event.target.value;
+    onStatusChange(newStatus);
+    updateStatusInDB(newStatus);
   };
 
   const handlePersonnelChange = (event) => {
-    onPersonnelChange(event.target.value);
+    const newPersonnel = event.target.value;
+    onPersonnelChange(newPersonnel);
+    updateTeamInDB(newPersonnel);
   };
 
   const handlePriorityChange = (event) => {
-    onPriorityChange(event.target.value);
+    const newPriority = event.target.value;
+    onPriorityChange(newPriority);
+    updatePriorityInDB(newPriority);
   };
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: "1rem", backgroundColor: theme.palette.background.light, borderRadius: "1rem", color: theme.palette.grey[100] }}>
       <Box sx={{ flex: 1 }}>
+        {error && <Typography variant="body1" sx={{ color: 'red' }}>{error}</Typography>}
         <Typography variant="h3" sx={{ color: theme.palette.primary.main, marginBottom: "0.5rem" }}>Details</Typography>
         <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Name:</strong> {selectedData.name}</Typography>
         <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Address:</strong> {selectedData.address}</Typography>
         <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Phone:</strong> {selectedData.phone}</Typography>
-        <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Disaster:</strong> {selectedData.disaster}</Typography>
-        <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Time:</strong> {selectedData.time}</Typography>
+        <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Issue:</strong> {selectedData.issue}</Typography>
+        <Typography variant="body1" sx={{ marginBottom: "0.5rem" }}><strong>Time:</strong> {new Date(selectedData.time).toLocaleString()}</Typography>
       </Box>
 
-      <Box sx={{ flex: 1 , marginRight: "0.5rem"}}>
+      <Box sx={{ flex: 1, marginRight: "0.5rem" }}>
         {/* Status Select */}
         <Typography variant="body1" sx={{ marginBottom: "1rem", marginTop: "0.5rem" }}>
           <strong>Status:</strong>
@@ -72,12 +123,8 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
             variant="standard"
             sx={{
               m: 0.5,
-              '& .MuiSelect-icon': {
-                color: '#F0F7FD',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#F0F7FD',
-              },
+              '& .MuiSelect-icon': { color: '#F0F7FD' },
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: '#F0F7FD' },
               borderBottom: "none",
               "&:before": { borderBottom: "none" },
               "&:after": { borderBottom: "none" },
@@ -103,19 +150,15 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
 
         {/* Personnel Select */}
         <Typography variant="body1" sx={{ marginBottom: "1rem" }}>
-          <strong>Personnel Assigned:</strong>
+          <strong>Team Assigned:</strong>
           <Select
-            value={selectedData.personnel}
+            value={selectedData.team_assigned}
             onChange={handlePersonnelChange}
             variant="standard"
             sx={{
               m: 0.5,
-              '& .MuiSelect-icon': {
-                color: '#F0F7FD',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#F0F7FD',
-              },
+              '& .MuiSelect-icon': { color: '#F0F7FD' },
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: '#F0F7FD' },
               borderBottom: "none",
               "&:before": { borderBottom: "none" },
               "&:after": { borderBottom: "none" },
@@ -131,9 +174,9 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
               />
             )}
           >
-            {personnelOptions.map((personnel) => (
-              <MenuItem key={personnel} value={personnel} sx={{ color: theme.palette.grey[700] }}>
-                {personnel}
+            {personnelOptions.map((team_assigned) => (
+              <MenuItem key={team_assigned} value={team_assigned} sx={{ color: theme.palette.grey[700] }}>
+                {team_assigned}
               </MenuItem>
             ))}
           </Select>
@@ -148,12 +191,8 @@ const DetailsComponent = ({ selectedData, onStatusChange, onPersonnelChange, onP
             variant="standard"
             sx={{
               m: 0.5,
-              '& .MuiSelect-icon': {
-                color: '#F0F7FD',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#F0F7FD',
-              },
+              '& .MuiSelect-icon': { color: '#F0F7FD' },
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: '#F0F7FD' },
               borderBottom: "none",
               "&:before": { borderBottom: "none" },
               "&:after": { borderBottom: "none" },

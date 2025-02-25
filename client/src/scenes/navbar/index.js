@@ -1,6 +1,7 @@
 import { Box, Typography, useTheme } from '@mui/material';
 import FlexBetween from '../../components/FlexBetween';
 import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const Navbar = () => {
     const { palette } = useTheme();
@@ -15,7 +16,28 @@ const Navbar = () => {
             </FlexBetween>
 
             <FlexBetween gap="2rem">
-                <Box sx={{"&:hover": {color: palette.primary[100]}}}>Dashboard</Box>
+                <Box 
+                    component={Link} // Make the Box act as a Link
+                    to="/" // Link to Dashboard
+                    sx={{
+                        "&:hover": { color: palette.primary[100] },
+                        textDecoration: 'none', // Remove underline
+                        color: palette.grey[300], // Default color
+                    }}
+                >
+                    Dashboard
+                </Box>
+                <Box 
+                    component={Link} // Make the Box act as a Link
+                    to="/register" // Link to Registration Form
+                    sx={{
+                        "&:hover": { color: palette.primary[100] },
+                        textDecoration: 'none', // Remove underline
+                        color: palette.grey[300], // Default color
+                    }}
+                >
+                    Register
+                </Box>
             </FlexBetween>
         </FlexBetween>
     );

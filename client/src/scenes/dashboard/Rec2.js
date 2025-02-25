@@ -38,8 +38,8 @@ const Rec2 = ({ selectedTask }) => {
 
   if (!task) {
     return (
-      <DashBox gridArea="b">
-        <Typography variant="h6">No task selected</Typography>
+      <DashBox gridArea="b" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Typography variant="h4" sx={{ textAlign: 'center' }}>No task selected</Typography>
       </DashBox>
     );
   }
